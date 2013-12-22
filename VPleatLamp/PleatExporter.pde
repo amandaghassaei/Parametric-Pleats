@@ -9,13 +9,14 @@ class PleatExporter{
   int cutterWidthScaled = dpi*cutterWidth;
   int cutterHeightScaled = dpi*cutterHeight;
   
+  PGraphics pdf = createGraphics(cutterWidthScaled, cutterHeightScaled, PDF, filename+".pdf");
+  
   void drawPleat2DGeometry(ArrayList<float[]> profileVertices) {
-  //  size(cutterWidthScaled,cutterHeightScaled);
-    beginRecord(PDF, filename + ".pdf");//save as PDF
-    background(255);//white background
-    strokeWeight(0.001);//hairline width
-    stroke(0);//black lines
-    noFill();
+    pdf.beginDraw();
+    pdf.background(255);//white background
+    pdf.strokeWeight(0.001);//hairline width
+    pdf.stroke(0);//black lines
+    pdf.noFill();
     
     pushMatrix();
     translate(cornerOffsetScaled,cornerOffsetScaled);
@@ -26,7 +27,7 @@ class PleatExporter{
       this.drawVPleat(_vertex[0], _vertex[1], flippedOrientation);
       flippedOrientation = !flippedOrientation;//you must flip the orientation of the V pleats after each pleat
     }
-    endRecord();
+    pdf.endDraw();
     exit();
   }
   
@@ -42,17 +43,15 @@ class PleatExporter{
     float vertexHeight = getVertexHeight(vertexAngle)*dpi;
     float vertexTop = vertexPosition - vertexHeight/2;
     float vertexBottom = vertexPosition + vertexHeight/2;
-    beginShape();
+    pg.beginShape();
     for (int i=0;i<numPleats+1;i++){
       if (flipped){
-        vertex(i*pleatWidthScaled,vertexTop);
-        println(vertexTop);
+        pg.vertex(i*pleatWidthScaled,vertexTop);
       } else {
-        vertex(i*pleatWidthScaled,vertexBottom);
-        println(vertexBottom);
+        pg.vertex(i*pleatWidthScaled,vertexBottom);
       }
       flipped = !flipped;
     }
-    endShape();
+    pg.endShape();
   }
 }
