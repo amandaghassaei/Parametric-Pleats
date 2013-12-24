@@ -18,7 +18,6 @@ ProfileViewController profileVC = new ProfileViewController();
 
 void setup(){
   size(900,600,OPENGL);
-  frame.setResizable(true);
   usableProfileVertices = createProfileGeometry();
 }
 
