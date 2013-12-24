@@ -6,10 +6,12 @@ int tessCols = 7;//num of columns in tessellation
 int tessRows = 6;//num of rows in tessellation
 float cornerOffset = 0.5;//offset oftessellated area from top left corner (inches)
 float gridSize = 2;//the size of the tesselated grid (inches)
+float kerf = 0.05;//add extra spacing between tiles (inches)
 String filename = "GlideReflection";
 
 int cutterWidth = 36;//width of laser cutter (inches)
 int cutterHeight = 24;//height of laser cutter (inches)
+
 
 void setup(){
   
@@ -25,24 +27,42 @@ void setup(){
   pushMatrix();
   translate(cornerOffset,cornerOffset);
   
-  line(0,0,tessCols*gridSize,0);
+  line(0,kerf/2,tessCols*gridSize,kerf/2);
   for (int i=0;i<tessRows;i++){
-    line(0,gridSize*(i+0.5),tessCols*gridSize,gridSize*(i+0.5));
-    line(0,gridSize*(i+1),tessCols*gridSize,gridSize*(i+1));
+    if (kerf>0) {
+      line(0,gridSize*(i+0.5)+kerf/2,tessCols*gridSize,gridSize*(i+0.5)+kerf/2);
+      if (i<tessRows-1) line(0,gridSize*(i+1)+kerf/2,tessCols*gridSize,gridSize*(i+1)+kerf/2);
+    }
+    line(0,gridSize*(i+0.5)-kerf/2,tessCols*gridSize,gridSize*(i+0.5)-kerf/2);
+    line(0,gridSize*(i+1)-kerf/2,tessCols*gridSize,gridSize*(i+1)-kerf/2);
   }
-  line(0,0,0,tessRows*gridSize);
+  
+  line(kerf/2,0,kerf/2,tessRows*gridSize);
   boolean verticalOffset = false;
+  float fortyFiveKerfOffset = kerf*sqrt(2)/2;
   for (int i=0;i<tessCols;i++){
-    line(gridSize*(i+1),0,gridSize*(i+1),tessRows*gridSize);
+    if (kerf>0 && i<tessCols-1) line(gridSize*(i+1)+kerf/2,0,gridSize*(i+1)+kerf/2,tessRows*gridSize);
+    line(gridSize*(i+1)-kerf/2,0,gridSize*(i+1)-kerf/2,tessRows*gridSize);
     for (int j=0;j<tessRows;j++){
       if (verticalOffset){
-        line((i+0.5)*gridSize,j*gridSize,i*gridSize,(j+0.5)*gridSize);
-        line((i+0.5)*gridSize,j*gridSize,(i+1)*gridSize,(j+0.5)*gridSize);
-        line(i*gridSize,(j+0.5)*gridSize,(i+0.5)*gridSize,(j+1)*gridSize);
-        line((i+1)*gridSize,(j+0.5)*gridSize,(i+0.5)*gridSize,(j+1)*gridSize);
+        line((i+0.5)*gridSize,j*gridSize+fortyFiveKerfOffset,i*gridSize,(j+0.5)*gridSize+fortyFiveKerfOffset);
+        line((i+0.5)*gridSize,j*gridSize+fortyFiveKerfOffset,(i+1)*gridSize,(j+0.5)*gridSize+fortyFiveKerfOffset);
+        line(i*gridSize,(j+0.5)*gridSize+fortyFiveKerfOffset,(i+0.5)*gridSize,(j+1)*gridSize+fortyFiveKerfOffset);
+        line((i+1)*gridSize,(j+0.5)*gridSize+fortyFiveKerfOffset,(i+0.5)*gridSize,(j+1)*gridSize+fortyFiveKerfOffset);
       } else {
-        line(i*gridSize,j*gridSize,(i+1)*gridSize,(j+1)*gridSize);
-        line((i+1)*gridSize,j*gridSize,i*gridSize,(j+1)*gridSize);
+        line(i*gridSize,j*gridSize+fortyFiveKerfOffset,(i+1)*gridSize,(j+1)*gridSize+fortyFiveKerfOffset);
+        line((i+1)*gridSize,j*gridSize+fortyFiveKerfOffset,i*gridSize,(j+1)*gridSize+fortyFiveKerfOffset);
+      }
+      if (kerf>0){
+        if (verticalOffset){
+          line((i+0.5)*gridSize,j*gridSize-fortyFiveKerfOffset,i*gridSize,(j+0.5)*gridSize-fortyFiveKerfOffset);
+          line((i+0.5)*gridSize,j*gridSize-fortyFiveKerfOffset,(i+1)*gridSize,(j+0.5)*gridSize-fortyFiveKerfOffset);
+          line(i*gridSize,(j+0.5)*gridSize-fortyFiveKerfOffset,(i+0.5)*gridSize,(j+1)*gridSize-fortyFiveKerfOffset);
+          line((i+1)*gridSize,(j+0.5)*gridSize-fortyFiveKerfOffset,(i+0.5)*gridSize,(j+1)*gridSize-fortyFiveKerfOffset);
+        } else {
+          line(i*gridSize,j*gridSize-fortyFiveKerfOffset,(i+1)*gridSize,(j+1)*gridSize-fortyFiveKerfOffset);
+          line((i+1)*gridSize,j*gridSize-fortyFiveKerfOffset,i*gridSize,(j+1)*gridSize-fortyFiveKerfOffset);
+        }
       }
     }
     verticalOffset = !verticalOffset;
@@ -58,4 +78,5 @@ void scaleAllVariables(int dpi){
   cutterHeight*=dpi;
   cornerOffset*=dpi;
   gridSize*=dpi;
+  kerf*=dpi;
 }
